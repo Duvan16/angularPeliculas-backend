@@ -28,9 +28,9 @@ namespace back_end.Controllers
         //[HttpGet("ejemplo")]
         //[HttpGet("{Id}")]
         [HttpGet("{Id:int}/{nombre=Roberto}")] //api/generos/3/Felipe
-        public ActionResult<Genero> Get(int Id, string nombre)
+        public async Task<ActionResult<Genero>> Get(int Id, string nombre)
         {
-            var genero = repositorio.ObtenerPorId(Id);
+            var genero = await repositorio.ObtenerPorId(Id);
             if (genero == null)
             {
                 return NotFound();
