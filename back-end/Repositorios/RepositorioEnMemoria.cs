@@ -6,17 +6,24 @@ using System.Threading.Tasks;
 
 namespace back_end.Repositorios
 {
-    public class RepositorioEnMemoria: IRepositorio
+    public class RepositorioEnMemoria : IRepositorio
     {
         private List<Genero> _generos;
         public RepositorioEnMemoria()
         {
             _generos = new List<Genero>()
             {
-                new Genero(){Id=1, Nombre = "Comedia"},
+                new Genero(){Id=1, Nombre = "Comedia"}
+                
+                
+                ,
                 new Genero(){Id=2, Nombre = "Acción"}
             };
+
+            _guid = Guid.NewGuid();
         }
+
+        public Guid _guid;
 
         public List<Genero> ObtenerTodosLosGeneros()
         {
@@ -28,6 +35,17 @@ namespace back_end.Repositorios
             //await Task.Delay(TimeSpan.FromSeconds(3));
             await Task.Delay(1);
             return _generos.FirstOrDefault(x => x.Id == Id);
+        }
+
+        public Guid ObtenerGUID()
+        {
+            return _guid;
+        }
+
+        public void CrearGenero(Genero genero)
+        {
+            genero.Id = _generos.Count() + 1;
+            _generos.Add(genero);
         }
     }
 }
