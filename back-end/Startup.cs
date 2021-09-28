@@ -1,4 +1,5 @@
 using back_end.Controllers;
+using back_end.Filtros;
 using back_end.Repositorios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -37,7 +38,11 @@ namespace back_end
             services.AddScoped<IRepositorio, RepositorioEnMemoria>();
             //services.AddTransient<IRepositorio, RepositorioEnMemoria>();
             services.AddScoped<WeatherForecastController>();
-            services.AddControllers();
+            services.AddTransient<MiFiltroDeAccion>();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(FiltroDeExcepcion));
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "back_end", Version = "v1" });
