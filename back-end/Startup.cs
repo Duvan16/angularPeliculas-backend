@@ -1,5 +1,6 @@
 using back_end.Controllers;
 using back_end.Repositorios;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -30,6 +31,8 @@ namespace back_end
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+            services.AddResponseCaching();//Activar cache
             //services.AddSingleton<IRepositorio, RepositorioEnMemoria>();
             services.AddScoped<IRepositorio, RepositorioEnMemoria>();
             //services.AddTransient<IRepositorio, RepositorioEnMemoria>();
@@ -86,6 +89,10 @@ namespace back_end
             app.UseHttpsRedirection();//middleware
 
             app.UseRouting();//middleware
+
+            app.UseResponseCaching();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();//middleware
 
