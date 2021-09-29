@@ -1,6 +1,5 @@
 ﻿using back_end.Entidades;
 using back_end.Filtros;
-using back_end.Repositorios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,61 +18,41 @@ namespace back_end.Controllers
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GenerosController : ControllerBase
     {
-        private readonly IRepositorio repositorio;
-        private readonly WeatherForecastController weatherForecastController;
         private readonly ILogger<GenerosController> logger;
 
-        public GenerosController(IRepositorio repositorio, WeatherForecastController weatherForecastController, ILogger<GenerosController> logger)
+        public GenerosController(ILogger<GenerosController> logger)
         {
-            this.repositorio = repositorio;
-            this.weatherForecastController = weatherForecastController;
             this.logger = logger;
         }
 
-        [HttpGet]
-        //[ResponseCache(Duration = 60)]
-        [ServiceFilter(typeof(MiFiltroDeAccion))]
-        public List<Genero> Get()
+        [HttpGet] //api/generos
+        public ActionResult<List<Genero>> Get()
         {
-            logger.LogInformation("Vamos a mostrar los generos");
-            return repositorio.ObtenerTodosLosGeneros();
+            return new List<Genero>() { new Genero() { Id = 1, Nombre = "Comedia" } };
         }
 
-
-        [HttpGet("guid")]//api/generos/guid
-        public ActionResult<Guid> GetGUID()
-        {
-            return Ok(new
-            {
-                GUID_GenerosController = repositorio.ObtenerGUID(),
-                GUID_WeatherForecastController = weatherForecastController.ObtenerGUIDWeatherForescastController()
-            });
-        }
-
-        //[HttpGet("ejemplo")]
-        //[HttpGet("{Id}")]
         [HttpGet("{Id:int}")] //api/generos/3/Felipe
-        public async Task<ActionResult<Genero>> Get(int Id, [FromHeader] string nombre)
+        public async Task<ActionResult<Genero>> Get(int Id)
         {
-            logger.LogDebug($"Obteniendo un género por el id {Id}");
-            var genero = await repositorio.ObtenerPorId(Id);
-            if (genero == null)
-            {
-                throw new ApplicationException($"El género De Id {Id} no encnontrado");
-                logger.LogWarning($"No pudimos encontrar el género de id {Id}");
-                return NotFound();
-            }
-
-            return genero;
-            //return Ok(genero); //IActionResult
-            //return Ok("Felipe");
+            throw new NotImplementedException();
         }
 
         [HttpPost]
         public ActionResult Post([FromBody] Genero genero)
         {
-            repositorio.CrearGenero(genero);
-            return NoContent();
+            throw new NotImplementedException();
+        }
+
+        [HttpPut]
+        public ActionResult Put([FromBody] Genero genero)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpDelete]
+        public ActionResult Delete()
+        {
+            throw new NotImplementedException();
         }
 
     }

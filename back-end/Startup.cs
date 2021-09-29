@@ -1,6 +1,5 @@
 using back_end.Controllers;
 using back_end.Filtros;
-using back_end.Repositorios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,12 +32,6 @@ namespace back_end
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
-            services.AddResponseCaching();//Activar cache
-            //services.AddSingleton<IRepositorio, RepositorioEnMemoria>();
-            services.AddScoped<IRepositorio, RepositorioEnMemoria>();
-            //services.AddTransient<IRepositorio, RepositorioEnMemoria>();
-            services.AddScoped<WeatherForecastController>();
-            services.AddTransient<MiFiltroDeAccion>();
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(FiltroDeExcepcion));
@@ -51,39 +44,8 @@ namespace back_end
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         //Este ses la tuberia
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
-            app.Use(async (context, next) =>
-            {
-                using (var swapStream = new MemoryStream())
-                {
-                    var respuestaOriginal = context.Response.Body;
-                    context.Response.Body = swapStream;
-
-                    await next.Invoke();
-
-                    swapStream.Seek(0, SeekOrigin.Begin);
-                    string respuesta = new StreamReader(swapStream).ReadToEnd();
-                    swapStream.Seek(0, SeekOrigin.Begin);
-
-                    await swapStream.CopyToAsync(respuestaOriginal);
-                    context.Response.Body = respuestaOriginal;
-
-                    logger.LogInformation(respuesta);
-                }
-            });
-
-            app.Map("/mapa1", (app) =>
-            {
-                app.Run(async context =>
-                {
-                    await context.Response.WriteAsync("Estoy interceptando el pipeline");
-                });
-            });
-
-
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();//middleware
@@ -94,8 +56,6 @@ namespace back_end
             app.UseHttpsRedirection();//middleware
 
             app.UseRouting();//middleware
-
-            app.UseResponseCaching();
 
             app.UseAuthentication();
 
