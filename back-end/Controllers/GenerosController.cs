@@ -1,4 +1,6 @@
-﻿using back_end.Entidades;
+﻿using AutoMapper;
+using back_end.DTOs;
+using back_end.Entidades;
 using back_end.Filtros;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -21,17 +23,30 @@ namespace back_end.Controllers
     {
         private readonly ILogger<GenerosController> logger;
         private readonly ApplicationDbContext context;
+        private readonly IMapper mapper;
 
-        public GenerosController(ILogger<GenerosController> logger, ApplicationDbContext context)
+        public GenerosController(ILogger<GenerosController> logger,
+            ApplicationDbContext context, IMapper mapper)
         {
             this.logger = logger;
             this.context = context;
+            this.mapper = mapper;
         }
 
         [HttpGet] //api/generos
-        public async Task<ActionResult<List<Genero>>> Get()
+        public async Task<ActionResult<List<GeneroDTO>>> Get()
         {
-            return await context.Generos.ToListAsync();
+            var generos = await context.Generos.ToListAsync();
+            return mapper.Map<List<GeneroDTO>>(generos);
+
+            //NO recomendable, mejor utilizar libreria automapper
+            /*var resultado = new List<GeneroDTO>();
+            foreach (var genero in generos)
+            {
+                resultado.Add(new GeneroDTO() { Id = genero.Id, Nombre = genero.Nombre });
+            }*/
+
+
         }
 
         [HttpGet("{Id:int}")] //api/generos/3/Felipe
@@ -41,8 +56,9 @@ namespace back_end.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] Genero genero)
+        public async Task<ActionResult> Post([FromBody] GeneroCreacionDTO generoCreacionDTO)
         {
+            var genero = mapper.Map<Genero>(generoCreacionDTO);
             context.Add(genero);
             await context.SaveChangesAsync();
             return NoContent();
