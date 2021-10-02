@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using NetTopologySuite;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,16 +37,22 @@ namespace back_end
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
+            services.AddSingleton(provider =>
+               new MapperConfiguration(config =>
+               {
+                   var geometryFactory = provider.GetRequiredService<GeometryFactory>();
+                   config.AddProfile(new AutoMapperProfiles(geometryFactory));
+               }).CreateMapper());
+            services.AddSingleton<GeometryFactory>(NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326));
+
             services.AddTransient<IAlmacenadorArchivos, AlmacenadorArchivosLocal>();
             services.AddHttpContextAccessor();
-            services.AddSingleton(provider =>
-                new MapperConfiguration(config =>
-                {
-                    config.AddProfile(new AutoMapperProfiles());
-                }).CreateMapper());
 
             services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("defaultConnection")));
+            options.UseSqlServer(Configuration.GetConnectionString("defaultConnection"),
+            sqlServer => sqlServer.UseNetTopologySuite()));
+
+            
 
             services.AddCors(options =>
             {
