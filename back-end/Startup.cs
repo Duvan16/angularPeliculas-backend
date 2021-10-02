@@ -41,7 +41,8 @@ namespace back_end
                 options.AddDefaultPolicy(builder =>
                 {
                     var frontendURL = Configuration.GetValue<string>("frontend_url");
-                    builder.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+                    builder.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader()
+                    .WithExposedHeaders(new string[] { "cantidadTotalRegistros" });
                 });
             });
 
