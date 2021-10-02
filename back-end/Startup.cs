@@ -35,6 +35,7 @@ namespace back_end
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
+            services.AddTransient<IAlmacenadorArchivos, AlmacenadorAzureStorage>();
             services.AddSingleton(provider =>
                 new MapperConfiguration(config =>
                 {

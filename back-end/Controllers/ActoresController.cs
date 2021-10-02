@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using back_end.DTOs;
 using back_end.Entidades;
+using back_end.Utilidades;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -15,12 +16,15 @@ namespace back_end.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
+        private readonly IAlmacenadorArchivos almacenadorArchivos;
+        private readonly string contenedor = "actores";
 
         public ActoresController(ApplicationDbContext context,
-            IMapper mapper)
+            IMapper mapper,IAlmacenadorArchivos almacenadorArchivos)
         {
             this.context = context;
             this.mapper = mapper;
+            this.almacenadorArchivos = almacenadorArchivos;
         }
 
         [HttpPost]
@@ -28,6 +32,12 @@ namespace back_end.Controllers
         {
             var actor = mapper.Map<Actor>(actorCreacionDTO);
             context.Add(actor);
+
+            if (actorCreacionDTO.Foto != null)
+            {
+                actor.Foto = await almacenadorArchivos.GuardarArchivo(contenedor, actorCreacionDTO.Foto);
+            }
+
             await context.SaveChangesAsync();
             return NoContent();
         }
