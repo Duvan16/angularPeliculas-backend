@@ -35,7 +35,8 @@ namespace back_end
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
-            services.AddTransient<IAlmacenadorArchivos, AlmacenadorAzureStorage>();
+            services.AddTransient<IAlmacenadorArchivos, AlmacenadorArchivosLocal>();
+            services.AddHttpContextAccessor();
             services.AddSingleton(provider =>
                 new MapperConfiguration(config =>
                 {
@@ -78,6 +79,8 @@ namespace back_end
             }
 
             app.UseHttpsRedirection();//middleware
+
+            app.UseStaticFiles();
 
             app.UseRouting();//middleware
 
