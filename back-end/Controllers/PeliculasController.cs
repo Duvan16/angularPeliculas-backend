@@ -3,6 +3,7 @@ using back_end.DTOs;
 using back_end.Entidades;
 using back_end.Utilidades;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,6 +55,18 @@ namespace back_end.Controllers
                     pelicula.PeliculasActores[i].Orden = i;
                 }
             }
+        }
+
+        [HttpGet("PostGet")]
+        public async Task<ActionResult<PeliculasPostGetDTO>> PostGet()
+        {
+            var cines = await context.Cines.ToListAsync();
+            var generos = await context.Generos.ToListAsync();
+
+            var cinesDTO = mapper.Map<List<CineDTO>>(cines);
+            var generosDTO = mapper.Map<List<GeneroDTO>>(generos);
+
+            return new PeliculasPostGetDTO() { Cines = cinesDTO, Generos = generosDTO };
         }
     }
 }
