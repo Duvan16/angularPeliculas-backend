@@ -15,5 +15,6 @@ namespace back_end.Entidades
 
         [PrimeraLetraMayuscula]
         public string Nombre { get; set; }
+        public List<PeliculasGeneros> PeliculasGeneros { get; set; }
     }
 }
